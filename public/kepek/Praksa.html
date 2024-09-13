@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link type="text/css" href="Praksa.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script src="cards.js"></script>
+    <script src="hamburger.js"></script>
+    <script src="popup.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link type="js" href="Praksa.java" >
+    <title>Elektronikus bevásárló lista</title>
+</head>
+<body>
+    
+     <nav class="navbar">
+    <div class="container">
+        <img src="logo.png" alt="Logo" class="navbar-logo">
+
+        <div class="theme-toggle" onclick="toggleTheme()">
+            <img src="off-button.png" alt="Toggle Light/Dark Mode" id="theme-icon">
+        </div>
+        
+        <script>
+            function toggleTheme() {
+                const body = document.body;
+                const themeIcon = document.getElementById("theme-icon");
+        
+                if (body.classList.contains("dark-mode")) {
+                    body.classList.remove("dark-mode");
+                    body.classList.add("light-mode");
+                    themeIcon.src = "off-button.png"; // Light mode ikon
+                } else {
+                    body.classList.remove("light-mode");
+                    body.classList.add("dark-mode");
+                    themeIcon.src = "switch.png"; // Dark mode ikon
+                }
+            }
+        </script>
+        
+        <div class="download-btn">
+            <a href="C:\Users\Dominik\Desktop\School\StudioPresent\DownloadedFile\Letöltött cucc.docx	" download>
+                <img src="pdf.png" alt="PDF Icon" class="pdf-icon">
+                <span>Download</span>
+            </a>
+        </div>    
+
+        <!-- Hamburger icon (visible only on mobile) -->
+        <div class="hamburger" onclick="toggleMenu()">
+            &#9776;
+        </div>
+
+        <!-- Navigation links on the right -->
+        <div class="navbar-collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="#section1">Die metygerei</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#section2">Dry aged</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#section3">Fleischversand</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#section4">Events/Kurse</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#section5">Partyservice</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#section6">Tagesessen</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#section7">Kontakt</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<script>
+    function toggleMenu() {
+        const navbarCollapse = document.querySelector('.navbar-collapse');
+        navbarCollapse.classList.toggle('active');
+    }
+</script>
+
+    
+<div id="section0" class="section0">
+    <img src="clock.svg">
+    <p>Open 24/7 .Never to late to check into our store.</p>
+</div>
+
+
+<div id="section1" class="section">
+    <div class="mobile-image">
+        <img src="image 14.jpg" alt="Heiko Brath" />
+    </div>
+
+    <div class="section1container">
+        <div class="container">
+            <h1>Heiko Brath Metzgermeister</h1><br>
+            <p>German Ipsum Dolor deserunt dissentias <br> Grimm's Fairy Tales et. Tollit argumentum <br> ius an. Pancakes lobortis elaboraret<br> per ne, nam Aperol Spritz probatus pertinax.</p>
+        </div>
+    </div>
+</div>
+
+
+<!-- Popup Modal -->
+<div id="popup-modal" class="popup">
+    <div class="popup-content">
+        <span class="close-btn" onclick="closePopup()">&times;</span>
+        <h2>Subscribe to Our Newsletter</h2>
+        <p>Get the latest updates and offers straight to your inbox.</p>
+        <button onclick="acceptPopup()">Subscribe</button>
+    </div>
+</div>
+
+
+
+<div id="section2" class="section">
+    <div class="container">
+        <div class="row">
+            <div class="col text-content">
+                <h1>Dry aged<br>Alte Wutz, Dry Aged</h1><br>
+                <p>
+                    Halt amet, consectetur Handtasche elit, sed do eiusmod tempor Stuttgart ut labore et dolore magna 99 Luftballons Ut enim ad minim veniam, Turnbeutel nostrud exercitation ullamco laboris nisi Sprechen Sie deutsch aliquip ex ea commodo consequat. Wiener Schnitzel aute irure dolor in reprehenderit Guten Tag mollit anim Stuttgart.
+                    id latine indoctum complectitur HugoClub Mate mea meliore denique nominavi id. Ohrwurm expetenda nam an, his ei Reise euismod assentior.
+                </p>
+                <div class="button-container">
+                    <button class="btn btn-primary">Dry aged</button>
+                    <button class="btn btn-primary">Alte Wutz</button>
+                </div>
+            </div>
+            
+            <div class="col image-gallery">
+                <div class="main-image">
+                    <img src="287e4a29fb95622355c7023ec0f765ff@2x 1.svg" alt="Main image">
+                </div>
+                <div class="thumbnail-gallery">
+                    <img src="Group 629.png" alt="Thumbnail 1">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="section3" class="section">
+    <div class="container">
+        <div class="row">
+            <div class="col text-content">
+                <h1>Buchen Sie den Grillkurs jetzt</h1>
+                <ul>
+                    <li>professioneller Lehrer</li>
+                    <li>ausgezeichneter Metzger</li>
+                    <li>1 Tag</li>
+                    <li>lernen Sie die Kunst des Grillens</li>
+                </ul>
+                <div class="button-container">
+                    <button class="btn btn-white">Grillkurs</button>
+                </div>
+            </div>
+            
+            <!-- Desktop image (rejtve mobilon) -->
+            <div class="image-content">
+                <img src="victoria-shes-UC0HZdUitWY-unsplash copy@2x 1.jpg" alt="Grill Image">
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobil kép (csak mobilon jelenik meg) -->
+    <div class="mobile-image-section3">
+        <img src="victoria-shes-UC0HZdUitWY-unsplash copy@2x 1.jpg" alt="Grill Image">
+    </div>
+</div>
+
+
+
+
+<div id="section4" class="section">
+    <h1>Das Handwerk</h1>
+    <h3>alles über unsere Hausgemachte Produkte</h3>
+    <div class="container">
+        <p>Halt amet, consectetur Handtasche elit, sed do eiusmod tempor Stuttgart ut labore et dolore magna 99 Luftballons Ut enim ad minim veniam, Turnbeutel nostrud exercitation ullamco laboris nisi Sprechen Sie deutsch aliquip ex ea commodo consequat.<br><br> Wiener Schnitzel aute irure dolor in Guten Tag mollit anim Stuttgart.<br><br>
+        id latine indoctum complectitur HugoClub Mate mea meliore denique nominavi id. Ohrwurm expetenda nam an, his ei Reise euismod assentior</p>
+        <div class="button-container">
+            <button class="btn btn-white">Das handwerk</button>
+        </div>
+        <img src="vonal 1.png" alt="Separator Line">
+        
+        
+        <div class="thumbnail-gallery2">
+            <div class="image-wrapper">
+                <img src="Group 661@2x.png" alt="Würstchen">
+                <div class="overlay">Würstchen</div>
+            </div>
+            <div class="image-wrapper">
+                <img src="Group 660@2x.png" alt="Hähnchen">
+                <div class="overlay">Hähnchen</div>
+            </div>
+            <div class="image-wrapper">
+                <img src="Group 659@2x.png" alt="Schwein">
+                <div class="overlay">Schwein</div>
+            </div>
+            <div class="image-wrapper">
+                <img src="Group 658@2x.png" alt="Rind">
+                <div class="overlay">Rind</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="section5" class="section">
+    <div class="container">
+        <div class="row">
+            
+            <div class="col text-content">
+                <h1>Custome spices for your meat</h1>
+                <h3>Turnbeutel nostrud exercitation ullamco<br>Sprechen Sie deutsch</h3>
+                <p>Odio principes iracundia Müller Rice pri. Ut vel solum mandamus, Kartoffelkopf natum adversarium ei ius, diam Schmetterling honestatis eum.</p>
+                <p>Wiener Schnitzel amet, consectetur Handtasche elit, sed do eiusmod tempor Stuttgart ut labore et dolore magna 99 Luftballons Ut enim ad minim veniam, Turnbeutel nostrud exercitation ullamco laboris nisi Sprechen Sie deutsch aliquip ex ea commodo consequat.</p>
+            </div>
+            
+            <div class="col image-content">
+                <img src="4541cc99083f618a22b772228f8a9698@2x 1.jpg" alt="Spices Image">
+            </div>
+        </div>
+    </div>
+
+    <!-- Kép, ami mobilon jelenik meg a szöveg alatt -->
+    <div class="mobile-image">
+        <img src="4541cc99083f618a22b772228f8a9698@2x 1.jpg" alt="Spices Image">
+    </div>
+</div>
+
+
+
+<div id="section6" class="section">
+    <h1>Fleischversand</h1>
+    <div class="button-container">
+            <button class="btn btn-white">Jetzt bestellen</button>
+    </div>
+</div>
+
+
+
+<div id="section7" class="section">
+    <div class="container">
+        <div class="row">
+            <div class="col logo-container">
+                <img src="genussnetz logo 1.png" alt="Genussnetz Logo">
+            </div>
+            <div class="col text-container">
+                <h1>Metzgerei Brath ist Mitglied im Genussnetzwerk</h1>
+                <div class="button-container">
+                    <button class="btn btn-red">Gehen zu site</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="separator-line-container">
+        <img src="vonal 1.png" alt="Separator Line">
+    </div>
+
+    <div class="thumbnail-gallery3">
+        <h2>Auszeichnungen</h2>
+        <div class="image-wrapper2">
+            <img src="nagrada1.svg" alt="Award 1">
+            <div class="overlay2">Tollit argumentum genau Saepe lobortis</div>
+        </div>
+        <div class="image-wrapper2">
+            <img src="nagrada2.svg" alt="Award 2">
+            <div class="overlay2">Schneewittchen denique</div>
+        </div>
+        <div class="image-wrapper2">
+            <img src="nagrada3.svg" alt="Award 3">
+            <div class="overlay2">Grimms Märchen expetenda</div>
+        </div>
+        <div class="image-wrapper2">
+            <img src="nagrada4.svg" alt="Award 4">
+            <div class="overlay2">Mettwurst mei ullum gloriatur.</div>
+        </div>
+    </div>
+
+    
+    <div class="separator-line-container">
+        <img src="vonal 1.png" alt="Separator Line">
+    </div>
+</div>
+
+
+
+
+<div class="testimonial-section">
+    <h2 class="swiperh2">Was die Leute über uns sagen</h2>
+
+    <!-- Mobile Swiper -->
+    <div class="swiper-container testimonial-carousel-mobile">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide testimonial">
+                <p>Sprechen Sie deutsch aliquip ex ea commodo consequat...</p>
+                <h4>Maria Kartoffeln</h4>
+            </div>
+            <div class="swiper-slide testimonial">
+                <div class="icon">
+                    <img src="grillkurs_icon.svg" alt="Grill Icon"><br>
+                    <img src="zvezdice.svg" alt="stars" >
+                </div>
+                <p>Wiener Schnitzel amet...</p>
+                <h4>Halling Tobias<br><small>Koch</small></h4>
+            </div>
+            <div class="swiper-slide testimonial action">
+                <p>Achtung fur atine indoctum...</p>
+                <h4>Rene Weinstein</h4>
+            </div>
+            
+        </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+
+    <!-- Desktop Swiper -->
+    <div class="swiper-container testimonial-carousel-desktop">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide testimonial">
+                <p>Sprechen Sie deutsch aliquip...</p>
+                <h4>Maria Kartoffeln</h4>
+            </div>
+            <div class="swiper-slide testimonial">
+                <div class="icon">
+                    <img src="grillkurs_icon.svg" alt="Grill Icon"><br>
+                    <img src="zvezdice.svg" alt="stars" >
+                </div>
+                <p>Wiener Schnitzel amet...</p>
+                <h4>Halling Tobias<br><small>Koch</small></h4>
+            </div>
+            <div class="swiper-slide testimonial">
+                <p>Achtung fur atine indoctum...</p>
+                <h4>Rene Weinstein</h4>
+            </div>
+            <div class="swiper-slide testimonial">
+                <p>Deutsche Küche ist weltweit bekannt für ihre Vielfalt und Traditionen. Jede Region hat ihre eigenen Spezialitäten, die die reiche kulinarische Geschichte Deutschlands widerspiegeln.</p>
+                <h4>Hans Müller</h4>
+            </div>
+            <div class="swiper-slide testimonial">
+                <p>Obwohl oft unterschätzt, die deutsche Esskultur hat sich über die Jahrhunderte weiterentwickelt und beeinflusst viele moderne Gerichte in Europa.</p>
+                <h4>Elke Schmidt</h4>
+            </div>
+        </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+
+    <button class="all-reviews-btn">Alle Berichte</button>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<footer>
+    <div class="footer-container">
+        <div class="footer-left">
+            <p>Klauprechtstraße 25<br>
+               76137 Karlsruhe, Germany<br>
+               +49 721 358060<br>
+               info@partyservice-brath.de</p>
+        </div>
+        <div class="footer-center">
+            <img src="logo.png" alt="Brath Logo" class="footer-logo">
+        </div>
+        <div class="footer-right">
+            <p>Besuchen Sie uns auf:</p>
+            <div class="social-icons">
+                <a href="#"><img src="Group 628 1.png" alt="Twitter" style="width: auto;"></a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2020 by Metzgerei Heiko Brath GmbH, Deutschland</p>
+        <p>Code and design by <a href="https://studiopresent.com">StudioPresent</a></p>
+    </div>
+</footer>
+
+
+</body>
+</html>
+
+
+
+
