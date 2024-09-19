@@ -1,0 +1,403 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;700&display=swap');
+
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    
+}
+
+body {
+    background-image: url('../public/kepek/Háttér\ és\ Fejléc.png');
+    background-color: #d8ecf4;
+    background-position: top center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    font-family: 'Fredoka', sans-serif;
+}
+
+
+#section1, #section2 {
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: transparent; 
+}
+
+
+
+#section1 {
+    color: white;
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+}
+
+
+#section2 {
+    height: auto;
+    padding-top: 15%;
+    color: white;
+    
+}
+
+
+.section1container1 {
+    max-width: 1000px;
+    text-align: center;
+    
+    
+    padding: 0 20px;
+    border-radius: 12px;
+    
+}
+.section1container2 {
+    
+    text-align: center;
+    
+    padding: 20px;
+    padding-top: 35%;
+    border-radius: 12px;
+    position: bottom;
+    
+}
+
+/* Fejléc stílus */
+.h11 {
+    font-family: 'Fredoka', sans-serif;
+    color: #08648c; 
+    font-size: 95px; 
+    text-align: center;
+}
+
+.h12 {
+    font-family: 'Fredoka', sans-serif;
+    color: #08648c;
+    font-size: 40px;
+    margin-bottom: 0px;
+    text-align: center;
+    background: none; 
+    border: none;
+    cursor: pointer; 
+    
+}
+.h12:hover {
+    color: #00648c !important; 
+    background: none !important; 
+    border: none !important; 
+    cursor: pointer !important; 
+  }
+
+/* Leíró szöveg */
+p {
+    font-family: 'Fredoka', sans-serif;
+    color: #333;
+    font-size: 18px;
+    line-height: 1.6;
+    margin-top: 20px; 
+}
+
+.section1container .button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 15px 30px;
+    border-radius: 30px;
+    text-transform: uppercase;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: bold;
+    font-size: 20px;
+    cursor: pointer;
+    border: none;
+    margin-top: 20px;
+}
+/* Section 2 tartalom */
+.section2container {
+    position: relative;
+    width: 100%; 
+    max-width: 1300px; 
+}
+
+.comment{
+    text-align: center;
+}
+
+
+
+
+@media (max-width: 768px) {
+    #section2{
+        padding-bottom: 25%;
+    }
+
+
+    .h11 {
+        font-size: 40px; 
+        color: #08648c;
+    }
+    
+    .h12 {
+        font-size: 24px;
+        color: #08648c;
+    }
+    
+    p {
+        font-size: 14px;
+    }
+    
+    .sled-image {
+        width: 100px; 
+    }
+    
+    .track-label {
+        font-size: 16px;
+        margin-top: -45px;
+    }
+    
+    .amount-label {
+        font-family: 'Fredoka', sans-serif !important;
+        color: #00648c;
+        font-weight: bold;
+        font-size: 18px; 
+    }
+    
+    .submit-reset-container {
+        gap: 10px;
+    }
+    
+    .button-container {
+        width: 120px;
+        height: 40px;
+        font-size: 14px;
+    }
+    .sled-track .line-image {
+        width: 5px;
+        height: 50px;
+    }
+    
+    .sled-track .sled-image{
+        width: 90px;
+        position: absolute;
+        top: 0px;
+        left: 0; 
+    }
+    
+    .sled-track .track-label{
+        font-family: 'Arial', sans-serif;
+        color: #08648c;
+        font-size: 10px;
+        position: absolute;
+        top: 100px; 
+        left: 30%; 
+    }
+    
+    .sled-track .info-image{
+        width: 50px;
+       position: absolute;
+       top: 60px;
+    }
+    .sled-track .track-image {
+        width: 100%;
+        max-width: 1300px;
+        min-height: auto;
+        margin-top: 40px;
+        
+    }
+   
+    
+}
+
+
+/* Szánkó pálya */
+.sled-track {
+    position: relative;
+    margin-bottom: 12%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start; 
+}
+
+/* Pálya képe */
+.track-image {
+    width: 100%;
+    max-width: 1300px;
+    min-height: 120px;
+    margin-top: 40px;
+    
+}
+.info-image{
+    width: 200px;
+    position: absolute;
+    top: 100px;
+}
+
+/* Vonalak konténere */
+.lines-container {
+    position: absolute;
+    top: 0;
+    width: 95%;
+    display: flex;
+    justify-content: space-between; 
+    padding-left: 20 px; 
+}
+
+.line-image {
+    width: 5px;
+    height: 80px; 
+}
+
+/* Szánkó pozíciója */
+.sled-image {
+    width: 150px;
+    position: absolute;
+    top: 0px; 
+    left: 0;
+}
+
+
+/* Pálya feliratok */
+.track-label {
+    font-family: 'Fredoka', sans-serif;
+    color: #08648c;
+    font-size: 28px;
+    position: absolute;
+    top: 120px; 
+    left: 20%; 
+    
+}
+
+/* Adomány összegek stílusa */
+.amount-label {
+    font-family: 'Fredoka', sans-serif !important;
+    color: #08648c;
+    font-size: 32px !important;
+    font-weight: bold !important; 
+    position: absolute;
+    right: 0;
+    top: -45px;
+    margin-right: 20px;
+}
+
+/* Nagy szöveg a fejlécben */
+.header-container {
+    text-align: center;
+    padding: 50px 0;
+}
+
+.header-container h1 {
+    font-size: 48px;
+    font-weight: bold;
+    color: #007bff;
+    font-family: 'Fredoka', sans-serif;
+}
+
+
+
+
+
+/* Fredoka betűtípus a pénzösszegekhez */
+.fredoka-text {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 400; 
+    font-style: normal;
+}
+
+
+.submit-reset-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px; 
+    margin-top: 30px;
+
+    /* Az aljára rögzítjük */
+    position: fixed;
+    bottom: 20px; 
+    left: 50%;
+    transform: translateX(-50%); 
+    z-index: 1000; 
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 160px;
+    height: 50px;
+    border-radius: 25px; 
+    font-family: 'Arial', sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff; 
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+    background-color: #8CAAB7; 
+    border: 2px solid #BCCAD1; 
+    transition: background-color 0.3s ease; 
+}
+
+.button-container:hover {
+    background-color: #39b54a; 
+}
+
+.left-button {
+    background-color: #dceff7; 
+    color: #5264b4; 
+    border: 2px solid #9cb0c1; 
+}
+
+.right-button {
+    background-color: #333; 
+    color: white; 
+    border: 2px solid #2a8f37;
+}
+
+.button-container:hover {
+    opacity: 0.9;
+}
+
+.button-text {
+    pointer-events: none; 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+}
+button:disabled {
+    background-color: #333; 
+    color: white; 
+    cursor: not-allowed;  
+    opacity: 1; 
+}
+
+  button {
+    background-color: #4CAF50; 
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    font-size: 16px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s, opacity 0.3s;
+  }
+
+  button:hover {
+    background-color: #45a049; 
+  }
+
+
+  @media (max-width: 768px) {
+    .real-time-button {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .h12 {
+      pointer-events: none; 
+    }
+  }

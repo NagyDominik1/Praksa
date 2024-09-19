@@ -1,470 +1,321 @@
-import React, { useState, useEffect } from 'react';
-import './Praksa3.css'; // Import your CSS
-import Swiper from 'swiper';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-import 'swiper/css/autoplay';  // Ha az autoplay-t is használni akarod
+import React, { useState, useEffect, useRef } from 'react';
+import Draggable from 'react-draggable'; 
+import Modal from './modal.js';
+import RealTimeDataPage from './RealTimeDataPage'; 
+import axios from 'axios';
+import './Mikulas.css'; 
+import './modal.css';
 
-// App component
-const App = () => {
-  const [theme, setTheme] = useState('light-mode');
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [popupShown, setPopupShown] = useState(false);
-  const [hasPopupBeenShown, setHasPopupBeenShown] = useState(false);  // Új állapot
+const tracks = [
+  { foundation: "AUTIZMUS ALAPÍTVÁNY", donation: 0, link: "https://www.autizmus.hu/" },
+  { foundation: "LÁMPÁS '92 ALAPÍTVÁNY", donation: 0, link: "https://lampas92.hu/" },
+  { foundation: "NOÉ ÁLLATOTTHON ALAPÍTVÁNY", donation: 0, link: "http://www.noeallatotthon.hu/" },
+  { foundation: "SZENT ISTVÁN KIRÁLY ZENEI ALAPÍTVÁNY", donation: 0, link: "https://www.szentistvanzene.hu/szent-istvan-kiraly-zenei-alapitvany/" },
+];
 
-  // Theme toggle function
-  const toggleTheme = () => {
-    const newTheme = theme === 'dark-mode' ? 'light-mode' : 'dark-mode';
-    setTheme(newTheme);
+function App() {
+  const [sleighPositions, setSleighPositions] = useState([0, 0, 0, 0]); 
+  const [draggablePositions, setDraggablePositions] = useState([
+    { x: 0, y: 0 },
+    { x: 0, y: 0 },
+    { x: 0, y: 0 },
+    { x: 0, y: 0 }
+  ]); 
+  const maxDonation = 3000000;
+  const donationPerStation = 250000;
+  const [trackWidth, setTrackWidth] = useState(1200); 
+  const trackRef = useRef(null); 
+  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [isMaxReached, setIsMaxReached] = useState(false);
+  const [showRealTimeData, setShowRealTimeData] = useState(false); 
+  const [passwordError, setPasswordError] = useState(false); 
+  const [clickCount, setClickCount] = useState(0);
+const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+  useEffect(() => {
+    const updateTrackWidth = () => {
+      if (trackRef.current) {
+        setTrackWidth(trackRef.current.clientWidth);
+      }
+    };
+    window.addEventListener('resize', updateTrackWidth);
+    updateTrackWidth();
+
+    return () => {
+      window.removeEventListener('resize', updateTrackWidth);
+    };
+  }, []);
+
+  const Modal = ({ isOpen, onClose, children }) => {
+    if (!isOpen) {
+      return null; 
+    }
+  
+    return (
+      <div className="modal-overlay" onClick={onClose}>
+        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <button className="modal-close-button" onClick={onClose}>
+            &times;
+          </button>
+          {children}
+        </div>
+      </div>
+    );
   };
 
-  // Hamburger menu toggle
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
+  
+  const handleReset = () => {
+    setSleighPositions([0, 0, 0, 0]); 
+    setDraggablePositions([
+      { x: 0, y: 0 },
+      { x: 0, y: 0 },
+      { x: 0, y: 0 },
+      { x: 0, y: 0 }
+    ]); 
+    setIsMaxReached(false); 
+    setClickCount(prev => prev + 1); 
+  };
+  const handleOpenModal = () => {
+    setIsModalOpen(true); 
   };
 
-  // Show popup function
-  const showPopup = () => {
-    if (!hasPopupBeenShown) {  // Csak akkor mutassuk, ha még nem mutattuk
-      setPopupShown(true);
-      document.body.classList.add('no-scroll'); // Disable scrolling when popup is visible
-      setHasPopupBeenShown(true);  // Jelöljük, hogy már megmutattuk
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const gridSize = trackWidth / 14.2;
+
+  const calculateDonations = () => {
+    return sleighPositions.map((position) => position * donationPerStation);
+  };
+
+  const totalDonation = calculateDonations().reduce((a, b) => a + b, 0);
+
+  const handleDrag = (index, position) => {
+    const newPositions = [...sleighPositions];
+    const currentTotal = newPositions.reduce((a, b) => a + b, 0) * donationPerStation;
+  
+    if (currentTotal + position * donationPerStation - sleighPositions[index] * donationPerStation <= maxDonation) {
+      newPositions[index] = position;
+      setSleighPositions(newPositions);
+  
+      const newDraggablePositions = [...draggablePositions];
+      newDraggablePositions[index] = { x: position * gridSize, y: 0 };
+      setDraggablePositions(newDraggablePositions);
     }
   };
 
-  // Close popup function
-  const closePopup = () => {
-    setPopupShown(false);  // Állítsd false-ra, hogy bezárja a popupot
-    document.body.classList.remove('no-scroll'); // Re-enable scrolling when popup is closed
+  async function getIPAddress() {
+    try {
+      const response = await axios.get('https://api.ipify.org?format=json');
+      return response.data.ip;
+    } catch (error) {
+      console.error('IP lekérési hiba:', error);
+      return null;
+    }
+  }
+  
+  async function handleSubmit() {
+    if (totalDonation !== maxDonation) {
+      alert(`Az össz adomány összege pontosan 3 millió forint kell legyen! Jelenleg: ${totalDonation} Ft.`);
+      return;
+    }
+  
+    const ip = await getIPAddress();
+    const currentTime = new Date(); 
+  
+    // Get the most recent donation by IP address
+    const recentDonation = await axios.get(`https://sheetdb.io/api/v1/6us7yoyv1ieyn/search?ip_address=${ip}`);
+    
+    if (recentDonation.data.length > 0) {
+      console.log('Last donation time from API:', recentDonation.data[0].date); 
+      const lastDonationTime = new Date(recentDonation.data[0].date); 
+      console.log('Parsed last donation time:', lastDonationTime);
+    
+      const timeDifference = (currentTime.getTime() - lastDonationTime.getTime()) / (1000 * 60); 
+      console.log('Time difference in minutes:', timeDifference);
+  
+      if (timeDifference < 10) {
+        alert('10 percen belül csak egyszer lehet adományozni.');
+        return; 
+      }
+    }
+  
+    // If more than 10 minutes have passed or no recent donation exists, proceed with the submission
+    const donationData = [
+      {
+        foundation1: sleighPositions[0] * donationPerStation,
+        foundation2: sleighPositions[1] * donationPerStation,
+        foundation3: sleighPositions[2] * donationPerStation,
+        foundation4: sleighPositions[3] * donationPerStation,
+        date: currentTime.toISOString(),
+        ip_address: ip,
+      }
+    ];
+  
+    fetch('https://sheetdb.io/api/v1/6us7yoyv1ieyn', { 
+      method: 'POST', 
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ data: donationData }),
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error('Hiba történt az adatok küldésekor');
+    })
+    .then(data => {
+      console.log('Siker:', data);
+      alert('Az adatok sikeresen el lettek küldve!');
+      setIsModalOpen(true); 
+    })
+    .catch(error => {
+      console.error('Hiba történt:', error);
+      alert('Nem sikerült az adatok küldése, próbáld újra.');
+    });
+  }
+  
+  const handleRealTimeDataAccess = () => {
+    const password = prompt('Please enter the password:');
+    
+    const correctPassword = "mikulas"; 
+
+    if (password === correctPassword) {
+      setShowRealTimeData(true);
+      setPasswordError(false);
+    } else {
+      setPasswordError(true);
+    }
   };
 
-  // Accept popup action
-  const acceptPopup = () => {
-    closePopup();
-  };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 800 && !hasPopupBeenShown) {
-        showPopup();
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-
-    // Cleanup scroll event listener on component unmount
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [hasPopupBeenShown]);
-
-  useEffect(() => {
-    new Swiper('.testimonial-carousel-mobile', {
-      loop: true,
-      centeredSlides: true,  // A slide-ok középre igazítása
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-      },
-      pagination: {
-        el: '.swiper-pagination',
-        clickable: true,
-      },
-      slidesPerView: 1,
-      spaceBetween: 30,
-      autoplay: {
-        delay: 3000,  
-        disableOnInteraction: false,
-        reverseDirection: true,
-      },
-    });
-
-    new Swiper('.testimonial-carousel-desktop', {
-      loop: true,  
-      navigation: {
-        nextEl: '.swiper-button-next',  
-        prevEl: '.swiper-button-prev',  
-      },
-      pagination: {
-        el: '.swiper-pagination',
-        clickable: true,
-      },
-      slidesPerView: 2.5,  // Felemeljük az értéket
-      centeredSlides: false,  // Nem központosítjuk a középső slide-ot
-      spaceBetween: 30,  
-      autoplay: {
-        delay: 3000, 
-        disableOnInteraction: false,
-        reverseDirection: true,  // Balra mozgás
-      },
-      breakpoints: {
-        768: {
-          slidesPerView: 2.5,  // Továbbra is részben látható 2-3 slide
-          spaceBetween: 30,
-        }
-      }
-    });
-    
-    
-    
-
-
-  }, []);
-  
-  
   return (
-    <div className={theme}>
-      <meta charSet="UTF-8" />
-      <link type="text/css" href="Praksa.css" rel="stylesheet" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-      <title>Elektronikus bevásárló lista</title>
-
-      {/* Navbar */}
-      <nav className="navbar">
-        <div className="container">
-          <img src="/kepek/logo.png" alt="Logo" className="navbar-logo" />
-
-          <div className="theme-toggle" onClick={toggleTheme}>
-            <img src={theme === 'dark-mode' ? '/kepek/switch.png' : '/kepek/off-button.png'} alt="Toggle Light/Dark Mode" id="theme-icon" />
+    <div>
+      {!showRealTimeData ? (
+        <div>
+          <div id="section1" className="section">
+            <div className="section1container1">
+              <div>
+                <h1 className='h11'>AZ AJÁNDÉK KÖZÖS</h1>
+              </div>
+            </div>
           </div>
-
-          <div className="download-btn">
-          <a href="/Letöltött cucc.docx" download>
-              <img src="/kepek/pdf.png" alt="PDF Icon" className="pdf-icon" />
-              <span>Download</span>
-            </a>
+          
+          <div id='sectionmiddle' className='section'>
+            <div>
+              <div className="section1container2">
+              <button className="h12" onClick={handleRealTimeDataAccess}>
+                Döntsünk róla eggyüt
+              </button>
+                <p>
+                  A szánkópályán minden beosztás 250 ezer forintot jelent. Húzza a
+                  szánkókat aszerint<br />
+                  ahogy Ön osztaná el az adományt az alapitványok között. A
+                  kiválasztott arányokat<br />
+                  végül egyesitjük, s ennek mefelelően osztjuk szét a felajánlott
+                  összeget a négy<br />
+                  szervezet között. Miután végzett, az "Elküldöm" gombra kattintva
+                  véglegesitse döntését.
+                </p>
+              </div>
+            </div>
           </div>
+          
+          <div id="section2" className="section">
+            <div className="section2container">
+              {tracks.map((track, index) => (
+                <div className="sled-track" key={track.foundation} ref={trackRef}>
+                  <img
+                    src={`/kepek/VectorAlso${index + 1}.png`}
+                    alt={`Track ${index + 1}`}
+                    className="track-image"
+                  />
+                  <div className="lines-container">
+                    {[...Array(13)].map((_, lineIndex) => (
+                      <img
+                        key={lineIndex}
+                        src="/kepek/vector.png"
+                        alt="Line"
+                        className="line-image"
+                      />
+                    ))}
+                  </div>
+                  <Draggable
+                    axis="x"
+                    bounds={{ left: 0, right: gridSize * 12 }}
+                    grid={[gridSize, 100]}
+                    position={draggablePositions[index]}
+                    onStart={() => {
+                      if (totalDonation >= maxDonation) return false; 
+                    }}
+                    onDrag={(e, data) => {
+                      const position = Math.min(12, Math.max(0, Math.round(data.x / gridSize)));
+                      handleDrag(index, position); 
+                    }}
+                  >
+                  <img
+                    src="/kepek/Szánkó_csúszkák.png"
+                    alt={`Sled ${index + 1}`}
+                    className="sled-image"
+                    style={{ cursor: 'grab' }}
+                  />
+                </Draggable>
 
-          {/* Hamburger icon (visible only on mobile) */}
-          <div className="hamburger" onClick={toggleMenu}>
-            &#9776;
-          </div>
+                  <img
+                    src="/kepek/Info_gombok_és_nevek.png"
+                    alt="Info and buttons"
+                    className="info-image"
+                    onClick={() => window.open(tracks[index].link, '_blank')} 
+                  />
+                  <div className="track-label">
+                    {track.foundation.toUpperCase()}
+                  </div>
+                  <div className="amount-label fredoka-text">
+                    {sleighPositions[index] * donationPerStation} Ft
+                  </div>
+                </div>
+              ))}
+            </div>
 
-          {/* Navigation links */}
-          <div className={`navbar-collapse ${menuOpen ? 'active' : ''}`}>
-            <ul className="navbar-nav">
-              <li className="nav-item">
-                <a className="nav-link" href="#section1">Die metygerei</a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="#section2">Dry aged</a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="#section3">Fleischversand</a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="#section4">Events/Kurse</a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="#section5">Partyservice</a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="#section6">Tagesessen</a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="#section7">Kontakt</a>
-              </li>
-            </ul>
+            <div className="submit-reset-container">
+              <div className="button-container left-button" onClick={handleReset}>
+                <span className="button-text">Visszaállítás</span>
+              </div>
+              <div className="button-container right-button" onClick={handleSubmit}>
+                <span className="button-text">
+                <button
+                 disabled={totalDonation !== maxDonation} 
+                >
+                 Elküldöm
+                </button>
+                </span>
+              </div>
+
+              
+              
+              
+            </div>
+            
+
+            <Modal
+              isOpen={isModalOpen} 
+              onClose={handleCloseModal}
+            >
+              {/*X button */}
+              <button className="modal-close-button" onClick={handleCloseModal}>
+                &times;
+              </button>
+              <h1 className='h11'>További jó szánkózást!</h1>
+              <p className='comment'>A döntésed alapján a felajánlott összeget elutaljuk az alapitványoknak köszönjük hogy résztvett az adományozásban!</p>
+            </Modal>
           </div>
         </div>
-      </nav>
-
-      {/* Section 0 */}
-      <div id="section0" className="section0">
-        <img src="/kepek/clock.svg" alt="Clock Icon" />
-        <p>Open 24/7. Never too late to check into our store.</p>
-      </div>
-
-      {/* Section 1 */}
-      <div id="section1" className="section">
-        <div className="mobile-image">
-          <img src="/kepek/image14.jpg" alt="Heiko Brath" />
-        </div>
-
-        <div className="section1container">
-          <div className="container">
-            <h1>Heiko Brath Metzgermeister</h1>
-            <p>
-              German Ipsum Dolor deserunt dissentias <br /> Grimm's Fairy Tales
-              et. Tollit argumentum <br /> ius an. Pancakes lobortis elaboraret
-              <br /> per ne, nam Aperol Spritz probatus pertinax.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {popupShown && (
-        <div id="popup-modal" className="popup visible">
-          <div className="popup-content">
-            <span className="close-btn" onClick={closePopup}>&times;</span>
-            <h2>Subscribe to Our Newsletter</h2>
-            <p>Get the latest updates and offers straight to your inbox.</p>
-            <button onClick={acceptPopup}>Subscribe</button>
-          </div>
-        </div>
+      ) : (
+        <RealTimeDataPage onBack={() => setShowRealTimeData(false)} />
       )}
-
-
-      {/* Section 2 */}
-      <div id="section2" className="section">
-  <div className="container">
-    <div className="row">
-      <div className="col text-content">
-        <h1>Dry aged<br />Alte Wutz, Dry Aged</h1>
-        <p>
-          Halt amet, consectetur Handtasche elit, sed do eiusmod tempor Stuttgart ut labore et dolore magna 99 Luftballons Ut enim ad minim veniam, Turnbeutel nostrud exercitation ullamco laboris nisi Sprechen Sie deutsch aliquip ex ea commodo consequat. Wiener Schnitzel aute irure dolor in reprehenderit Guten Tag mollit anim Stuttgart. id latine indoctum complectitur HugoClub Mate mea meliore denique nominavi id. Ohrwurm expetenda nam an, his ei Reise euismod assentior.
-        </p>
-        <div className="button-container">
-          <button className="btn btn-primary">Dry aged</button>
-          <button className="btn btn-primary">Alte Wutz</button>
-        </div>
-      </div>
-
-      <div className="col image-gallery">
-        <div className="main-image">
-          <img src="/kepek/287e4a29fb95622355c7023ec0f765ff@2x 1.svg" alt="Main" />
-        </div>
-        <div className="thumbnail-gallery">
-          <img src="/kepek/Group 629.png" alt="Thumbnail 1" />
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-      {/* Section 3 */}
-      <div id="section3" className="section">
-        <div className="container">
-          <div className="row">
-            <div className="col text-content">
-              <h1>Buchen Sie den Grillkurs jetzt</h1>
-              <ul>
-                <li>professioneller Lehrer</li>
-                <li>ausgezeichneter Metzger</li>
-                <li>1 Tag</li>
-                <li>lernen Sie die Kunst des Grillens</li>
-              </ul>
-              <div className="button-container">
-                <button className="btn btn-white">Grillkurs</button>
-              </div>
-            </div>
-
-            {/* Desktop image (rejtve mobilon) */}
-            <div className="image-content">
-              <img src="/kepek/victoria.jpg" alt="Grill1" />
-            </div>
-          </div>
-        </div>
-
-        {/* Mobil kép (csak mobilon jelenik meg) */}
-        <div className="mobile-image-section3">
-          <img src="/kepek/victoria.jpg" alt="Grill2" />
-        </div>
-      </div>
-
-      {/* Section 4 */}
-      <div id="section4" className="section">
-        <h1>Das Handwerk</h1>
-        <h3>alles über unsere Hausgemachte Produkte</h3>
-        <div className="container">
-          <p>
-            Halt amet, consectetur Handtasche elit, sed do eiusmod tempor Stuttgart ut labore et dolore magna 99 Luftballons Ut
-            enim ad minim veniam, Turnbeutel nostrud exercitation ullamco laboris nisi Sprechen Sie deutsch aliquip ex ea commodo
-            consequat. Wiener Schnitzel aute irure dolor in Guten Tag mollit anim Stuttgart.
-          </p>
-          <div className="button-container">
-            <button className="btn btn-white">Das handwerk</button>
-          </div>
-          <img src="/kepek/vonal 1.png" alt="Separator Line" />
-
-          <div className="thumbnail-gallery2">
-            <div className="image-wrapper">
-              <img src="/kepek/Group 661@2x.png" alt="Würstchen" />
-              <div className="overlay">Würstchen</div>
-            </div>
-            <div className="image-wrapper">
-              <img src="/kepek/Group 660@2x.png" alt="Hähnchen" />
-              <div className="overlay">Hähnchen</div>
-            </div>
-            <div className="image-wrapper">
-              <img src="/kepek/Group 659@2x.png" alt="Schwein" />
-              <div className="overlay">Schwein</div>
-            </div>
-            <div className="image-wrapper">
-              <img src="/kepek/Group 658@2x.png" alt="Rind" />
-              <div className="overlay">Rind</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Section 5 */}
-      <div id="section5" className="section">
-        <div className="container">
-          <div className="row">
-            <div className="col text-content">
-              <h1>Custome spices for your meat</h1>
-              <h3>Turnbeutel nostrud exercitation ullamco<br />Sprechen Sie deutsch</h3>
-              <p>Odio principes iracundia Müller Rice pri. Ut vel solum mandamus, Kartoffelkopf natum adversarium ei ius.</p>
-            </div>
-            <div className="col image-content">
-              <img src="/kepek/spicyimage.jpg" alt="Spices1" />
-            </div>
-          </div>
-        </div>
-
-        {/* Kép, ami mobilon jelenik meg a szöveg alatt */}
-        <div className="mobile-image">
-          <img src="/kepek/spicyimage.jpg" alt="Spices2" />
-        </div>
-      </div>
-
-      {/* Section 6 */}
-      <div id="section6" className="section">
-        <h1>Fleischversand</h1>
-        <div className="button-container">
-          <button className="btn btn-white">Jetzt bestellen</button>
-        </div>
-      </div>
-
-      {/* Section 7 */}
-      <div id="section7" className="section">
-        <div className="container">
-          <div className="row">
-            <div className="col logo-container">
-              <img src="/kepek/genussnetz logo 1.png" alt="Genussnetz Logo" />
-            </div>
-            <div className="col text-container">
-              <h1>Metzgerei Brath ist Mitglied im Genussnetzwerk</h1>
-              <div className="button-container">
-                <button className="btn btn-red">Gehen zu site</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="separator-line-container">
-          <img src="/kepek/vonal 1.png" alt="Separator Line" />
-        </div>
-
-        <div className="thumbnail-gallery3">
-          <h2>Auszeichnungen</h2>
-          <div className="image-wrapper2">
-            <img src="/kepek/nagrada1.svg" alt="Award 1" />
-            <div className="overlay2">Tollit argumentum genau Saepe lobortis</div>
-          </div>
-          <div className="image-wrapper2">
-            <img src="/kepek/nagrada2.svg" alt="Award 2" />
-            <div className="overlay2">Schneewittchen denique</div>
-          </div>
-          <div className="image-wrapper2">
-            <img src="/kepek/nagrada3.svg" alt="Award 3" />
-            <div className="overlay2">Grimms Märchen expetenda</div>
-          </div>
-          <div className="image-wrapper2">
-            <img src="/kepek/nagrada4.svg" alt="Award 4" />
-            <div class0Name="overlay2">Mettwurst mei ullum gloriatur.</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Testimonial Section */}
-      <div className="testimonial-section">
-        <h2 className="swiperh2">Was die Leute über uns sagen</h2>
-
-        {/* Mobile Swiper */}
-        <div className="swiper-container testimonial-carousel-mobile">
-          <div className="swiper-wrapper">
-            <div className="swiper-slide testimonial">
-              <p>Sprechen Sie deutsch aliquip ex ea commodo consequat...</p>
-              <h4>Maria Kartoffeln</h4>
-            </div>
-            <div className="swiper-slide testimonial">
-              <div className="icon">
-                <img src="/kepek/grillkurs_icon.svg" alt="Grill Icon" />
-                <br />
-                <img src="/kepek/zvezdice.svg" alt="stars" />
-              </div>
-              <p>Wiener Schnitzel amet...</p>
-              <h4>Halling Tobias<br /><small>Koch</small></h4>
-            </div>
-            <div className="swiper-slide testimonial">
-              <p>Achtung fur atine indoctum...</p>
-              <h4>Rene Weinstein</h4>
-            </div>
-          </div>
-          <div className="swiper-pagination"></div>
-          <div className="swiper-button-next"></div>
-          <div className="swiper-button-prev"></div>
-        </div>
-
-        {/* Desktop Swiper */}
-        <div className="swiper-container testimonial-carousel-desktop">
-          <div className="swiper-wrapper">
-            <div className="swiper-slide testimonial">
-              <p>Sprechen Sie deutsch aliquip...</p>
-              <h4>Maria Kartoffeln</h4>
-            </div>
-            <div className="swiper-slide testimonial">
-              <div className="icon">
-                <img src="/kepek/grillkurs_icon.svg" alt="Grill Icon" />
-                <br />
-                <img src="/kepek/zvezdice.svg" alt="stars" />
-              </div>
-              <p>Wiener Schnitzel amet...</p>
-              <h4>Halling Tobias<br /><small>Koch</small></h4>
-            </div>
-            <div className="swiper-slide testimonial">
-              <p>Achtung fur atine indoctum...</p>
-              <h4>Rene Weinstein</h4>
-            </div>
-            <div className="swiper-slide testimonial">
-              <p>Das Essen war einfach hervorragend, die Qualität ist unübertroffen...</p>
-              <h4>Karl Müller</h4>
-            </div>
-            <div className="swiper-slide testimonial">
-              <p>Eine wahre Geschmacksexplosion, ich komme auf jeden Fall wieder...</p>
-              <h4>Anna Schmidt</h4>
-            </div>
-          </div>
-          <div className="swiper-pagination"></div>
-          <div className="swiper-button-next"></div>
-          <div className="swiper-button-prev"></div>
-        </div>
-
-        <button className="all-reviews-btn">Alle Berichte</button>
-      </div>
-
-      {/* Footer */}
-      <footer>
-        <div className="footer-container">
-          <div className="footer-left">
-            <p>
-              Klauprechtstraße 25<br />
-              76137 Karlsruhe, Germany<br />
-              +49 721 358060<br />
-              info@partyservice-brath.de
-            </p>
-          </div>
-          <div className="footer-center">
-            <img src="/kepek/logo.png" alt="Brath Logo" className="footer-logo" />
-          </div>
-          <div className="footer-right">
-            <p>Besuchen Sie uns auf:</p>
-            <div className="social-icons">
-              <a href="#top"><img src="/kepek/Group 628 1.png" alt="Twitter" /></a>
-            </div>
-          </div>
-        </div>
-        <div className="footer-bottom">
-          <p>© 2020 by Metzgerei Heiko Brath GmbH, Deutschland</p>
-          <p>Code and design by <a href="https://studiopresent.com">StudioPresent</a></p>
-        </div>
-      </footer>
     </div>
   );
-};
+}
 
 export default App;
